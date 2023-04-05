@@ -24,7 +24,7 @@
                     <a href="{{ path('app_task_edit', { id: task.id }) }}">Modifier</a>
                 </td>
                 <td>
-                    <button>Supprimer</button>
+                    <a href="{{ path('app_task_delete', { id: task.id }) }}">Supprimer</a>
                 </td>
             </tr>
         {% endfor %}

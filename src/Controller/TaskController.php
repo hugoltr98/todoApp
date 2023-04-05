@@ -6,6 +6,7 @@ use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use mysql_xdevapi\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +40,7 @@ class TaskController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $task = $form->getData();
             $this->taskRepository->save($task, true);
-            return $this->redirectToRoute('app_task');
+            return $this->redirectToRoute('app_task_list');
         }
 
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
@@ -71,4 +72,22 @@ class TaskController extends AbstractController
             'task' => $task,
         ]);
     }
+
+
+    #[Route('/task/delete/{id}', name: 'app_task_delete')]
+    public function delete(int $id): Response
+    {
+        try {
+            $tasks = $this->taskRepository->find($id);
+            $this->taskRepository->remove($tasks, true);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+        }
+        $this->addFlash('success', 'Tâche supprimée');
+        return $this->redirectToRoute('app_task_list');
+    }
+
+    //TODO
+    // améliorer la façon de supprimer (avec une vérification?)
+    // faire la page delete de twig
 }
